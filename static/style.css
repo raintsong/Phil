@@ -16,7 +16,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica", "Roboto", "Droid Sans", "Arial", sans-serif;
-  width: 885px;
+  width: 1200px;
   margin: 5px;
 }
 
@@ -248,32 +248,32 @@ kbd {
   color: var(--black);
 }
 
-#sidebar {
+#sidebar, .sidebar {
   width: 260px;
   height: 550px;
   float: left;
   margin-left: 8px;
 }
 
-#sidebar .current-word {
+#sidebar .current-word, .sidebar .current-word {
   margin:0;
   font-size: 21pt;
   font-weight: 300;
 }
 
-#sidebar .direction-heading {
+#sidebar .direction-heading, .sidebar .direction-heading {
   padding: 3px 0 2px 0;
   border-top: 1px solid white;
   border-bottom: 1px solid white;
 
 }
 
-#sidebar .direction-heading.highlight {
+#sidebar .direction-heading.highlight, .sidebar .direction-heading.highlight {
   border-top: 1px solid var(--med-blue);
   border-bottom: 1px solid var(--med-blue);
 }
 
-#sidebar ul.matches {
+#sidebar ul.matches, .sidebar ul.matches {
   margin: 0;
   height: 70%;
   /*width: 160px;*/
@@ -285,11 +285,11 @@ kbd {
   overflow-y: scroll;
 }
 
-#sidebar ul.matches li {
+#sidebar ul.matches li, .sidebar ul.matches li {
   margin: 2px 0;
 }
 
-#sidebar ul.matches li:hover {
+#sidebar ul.matches li:hover, .sidebar ul.matches li:hover {
   background: var(--lt-grey); /* For browsers that do not support gradients */
   color: var(--black);
   font-weight: 500;

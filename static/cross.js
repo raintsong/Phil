@@ -264,6 +264,7 @@ class Interface {
     updateGridHighlights();
     updateSidebarHighlights();
     updateCluesUI();
+    updateCluesListUI();
   }
 }
 
@@ -444,6 +445,7 @@ function updateUI() {
   updateSidebarHighlights();
   updateMatchesUI();
   updateCluesUI();
+  updateCluesListUI();
   updateInfoUI();
 }
 
@@ -490,6 +492,36 @@ function updateCluesUI() {
   downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
   acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
   downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
+}
+
+function updateCluesListUI() {
+    let allClues = xw.clues;
+    console.log("Running updateCluesListUI...")
+    let acrossClues = [];
+    let downClues = [];
+    let acrossCluesList = document.getElementById("across-clues-list");
+    let downCluesList = document.getElementById("down-clues-list");
+
+    for (const key in xw.clues) {
+        const location = key.split(",");
+        const label = grid.querySelector('[data-row="' + location[0] + '"]').querySelector('[data-col="' + location[1] + '"]').firstChild.innerHTML;
+        if (label) {
+            if (location[2] == ACROSS) {
+                acrossClues.push(label + ". " + xw.clues[location]);
+            } else {
+                downClues.push(label + ". " + xw.clues[location]);
+            }
+        }
+    }
+    for (let clue in acrossClues) {
+        console.log(clue);
+
+    }
+
+    // console.log("ACROSS CLUES", acrossClues);
+    // console.log("DOWN CLUES",downClues);
+
+
 }
 
 function updateInfoUI() {
@@ -733,6 +765,7 @@ function autoFill(isQuick = false) {
   }
   if (solveWorkerState != 'ready') {
     cancelSolveWorker();
+    console.log("Auto-fill failed.")
   }
   solvePending = [isQuick];
   runSolvePending();
