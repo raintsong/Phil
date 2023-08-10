@@ -273,7 +273,7 @@ kbd {
   border-bottom: 1px solid var(--med-blue);
 }
 
-#sidebar ul.matches, .sidebar ul.matches {
+#sidebar ul.matches, .sidebar ul.matches, .sidebar ul.clues-list {
   margin: 0;
   height: 70%;
   /*width: 160px;*/
@@ -285,11 +285,11 @@ kbd {
   overflow-y: scroll;
 }
 
-#sidebar ul.matches li, .sidebar ul.matches li {
+#sidebar ul.matches li, .sidebar ul.matches li, .sidebar ul.clues-list li {
   margin: 2px 0;
 }
 
-#sidebar ul.matches li:hover, .sidebar ul.matches li:hover {
+#sidebar ul.matches li:hover, .sidebar ul.matches li:hover, .sidebar ul.clues-list li:hover {
   background: var(--lt-grey); /* For browsers that do not support gradients */
   color: var(--black);
   font-weight: 500;

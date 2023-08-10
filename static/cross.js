@@ -496,11 +496,15 @@ function updateCluesUI() {
 
 function updateCluesListUI() {
     let allClues = xw.clues;
-    console.log("Running updateCluesListUI...")
+    // console.log("Running updateCluesListUI...")
     let acrossClues = [];
     let downClues = [];
     let acrossCluesList = document.getElementById("across-clues-list");
     let downCluesList = document.getElementById("down-clues-list");
+    while(acrossCluesList.firstChild || downCluesList.firstChild) {
+        acrossCluesList.innerHTML = "";
+        downCluesList.innerHTML = "";
+    }
 
     for (const key in xw.clues) {
         const location = key.split(",");
@@ -508,20 +512,29 @@ function updateCluesListUI() {
         if (label) {
             if (location[2] == ACROSS) {
                 acrossClues.push(label + ". " + xw.clues[location]);
+                // console.log(label + ". " + xw.clues[location]);
             } else {
                 downClues.push(label + ". " + xw.clues[location]);
             }
         }
     }
-    for (let clue in acrossClues) {
-        console.log(clue);
 
+    for (const clue of acrossClues) {
+        // console.log("(Across) " + clue);
+        newClue = document.createElement("li");
+        newClue.className = "across-clue";
+        newClue.innerHTML = clue;
+        acrossCluesList.append(newClue);
     }
 
-    // console.log("ACROSS CLUES", acrossClues);
-    // console.log("DOWN CLUES",downClues);
-
-
+    for (const clue of downClues) {
+        // console.log("(Down) " + clue);
+        newClue = document.createElement("li");
+        newClue.className = "down-clue";
+        newClue.innerHTML = clue;
+        downCluesList.append(newClue);
+    }
+    console.log("Clues updated.")
 }
 
 function updateInfoUI() {
