@@ -110,27 +110,30 @@ function matchFromWordlist(word) {
 }
 
 function updateMatchesUI() {
-  let acrossMatchList = document.getElementById("across-matches");
-  let downMatchList = document.getElementById("down-matches");
-  acrossMatchList.innerHTML = "";
-  downMatchList.innerHTML = "";
-  const acrossMatches = matchFromWordlist(current.acrossWord);
-  const downMatches = matchFromWordlist(current.downWord);
-  for (i = 0; i < acrossMatches.length; i++) {
-    let li = document.createElement("LI");
-    li.innerHTML = acrossMatches[i].toLowerCase();
-    li.className = "";
-    // li.addEventListener('click', printScore);
-    li.addEventListener('dblclick', fillGridWithMatch);
-    acrossMatchList.appendChild(li);
-  }
-  for (i = 0; i < downMatches.length; i++) {
-    let li = document.createElement("LI");
-    li.innerHTML = downMatches[i].toLowerCase();
-    li.className = "";
-    li.addEventListener('dblclick', fillGridWithMatch);
-    downMatchList.appendChild(li);
-  }
+    let acrossMatchList = document.getElementById("across-matches");
+    let downMatchList = document.getElementById("down-matches");
+    acrossMatchList.innerHTML = "";
+    downMatchList.innerHTML = "";
+    if (!isEditable) {
+        return;
+    };
+    const acrossMatches = matchFromWordlist(current.acrossWord);
+    const downMatches = matchFromWordlist(current.downWord);
+    for (i = 0; i < acrossMatches.length; i++) {
+        let li = document.createElement("LI");
+        li.innerHTML = acrossMatches[i].toLowerCase();
+        li.className = "";
+        // li.addEventListener('click', printScore);
+        li.addEventListener('dblclick', fillGridWithMatch);
+        acrossMatchList.appendChild(li);
+    }
+    for (i = 0; i < downMatches.length; i++) {
+        let li = document.createElement("LI");
+        li.innerHTML = downMatches[i].toLowerCase();
+        li.className = "";
+        li.addEventListener('dblclick', fillGridWithMatch);
+        downMatchList.appendChild(li);
+    }
 }
 
 function fillGridWithMatch(e) {

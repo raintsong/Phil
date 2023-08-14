@@ -134,6 +134,7 @@ class Grid {
   }
 }
 
+// define class Button, to be used in Toolbar/Menu, to be used in Interface
 class Button {
   constructor(id) {
     this.id = id;
@@ -143,17 +144,20 @@ class Button {
     this.state = this.dom.className; // "normal", "on", "open", "disabled"
   }
 
-  setState(state) {
-    this.state = state;
-    this.dom.className = (this.state == "normal") ? "" : this.state;
-    if (state=="disabled") {
-        this.dom.disabled = true;
-        this.dom.classList.add("disabled");
-    } else {
-        this.dom.disabled = false;
-        this.dom.classList.remove("disabled");
+    setState(state) {
+        this.state = state;
+        this.dom.className = (this.state == "normal") ? "" : this.state;
+        if (state=="disabled") {
+            this.dom.disabled = true;
+            this.dom.classList.add("disabled");
+        } else {
+            this.dom.disabled = false;
+            this.dom.classList.remove("disabled");
+        }
+        if (this.id == "export-JSON") {
+            this.dom.classList.add("default"); // Otherwise, doDefault() will malfunction
+        }
     }
-  }
 
   addEvent(e, func) {
     this.dom.addEventListener(e, func);
@@ -176,6 +180,7 @@ class Button {
   }
 }
 
+// define class Menu, to be used in Toolbar
 class Menu { // in dev
   constructor(id, buttons) {
     this.id = id;
@@ -190,6 +195,7 @@ class Menu { // in dev
   }
 }
 
+// define class Toolbar, to be used in Interface
 class Toolbar {
   constructor(id) {
     this.id = id;
@@ -241,6 +247,7 @@ class Notification {
   }
 }
 
+// Define Interface. To be instantiated as "current"
 class Interface {
     constructor(rows, cols) {
         this.grid = new Grid(rows, cols);
@@ -468,7 +475,7 @@ function updateUI() {
   updateActiveWords();
   updateGridHighlights();
   updateSidebarHighlights();
-  updateMatchesUI();
+  updateMatchesUI(); // in wordlist.js
   updateCluesUI();
   updateCluesListUI();
   updateInfoUI();
@@ -496,28 +503,28 @@ function updateGridUI() {
 }
 
 function updateCluesUI() {
-  let acrossClueNumber = document.getElementById("across-clue-number");
-  let downClueNumber = document.getElementById("down-clue-number");
-  let acrossClueText = document.getElementById("across-clue-text");
-  let downClueText = document.getElementById("down-clue-text");
-  // const currentCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+    let acrossClueNumber = document.getElementById("across-clue-number");
+    let downClueNumber = document.getElementById("down-clue-number");
+    let acrossClueText = document.getElementById("across-clue-text");
+    let downClueText = document.getElementById("down-clue-text");
+    // const currentCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
 
-  // If the current cell is black, empty interface and get out
-  if (xw.fill[current.row][current.col] == BLACK) {
-    acrossClueNumber.innerHTML = "";
-    downClueNumber.innerHTML = "";
-    acrossClueText.innerHTML = "";
-    downClueText.innerHTML = "";
-    return;
-  }
-  // Otherwise, assign values
-  const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
-  const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
-  acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
-  downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
-  acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
-  downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
-}
+    // If the current cell is black, empty interface and get out
+    if (xw.fill[current.row][current.col] == BLACK) {
+        acrossClueNumber.innerHTML = "";
+        downClueNumber.innerHTML = "";
+        acrossClueText.innerHTML = "";
+        downClueText.innerHTML = "";
+        return;
+    }
+    // Otherwise, assign values
+    const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
+    const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
+    acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
+    downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
+    acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
+    downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
+    }
 
 function updateCluesListUI() {
     let allClues = xw.clues;
@@ -559,7 +566,7 @@ function updateCluesListUI() {
         newClue.innerHTML = clue;
         downCluesList.append(newClue);
     }
-    console.log("Clues updated.")
+    // console.log("Clues updated.")
 }
 
 function updateInfoUI() {
@@ -788,13 +795,18 @@ function toggleEditor() {
     buttonState = editorButton.getAttribute("data-state");
     editorButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
     editorButton.setAttribute("data-tooltip", "Turn " + buttonState + " editor mode");
-    console.log("Current toolbar: " + current.toolbar);
-    console.log("Current toolbar buttons: " + current.toolbar.buttons);
+    // console.log("Current toolbar: " + current.toolbar);
+    // console.log("Current toolbar buttons: " + current.toolbar.buttons);
     for (let [key, button] of Object.entries(current.toolbar.buttons)) {
+        // console.log("Current button: " + button.id)
+        if(button.id == "open-JSON") {
+            continue;
+        };
         if(isEditable) {
             button.setState("normal");
         } else {
             button.setState("disabled");
+            updateMatchesUI(); // clear the matches listed
         }
     }
 }
@@ -929,7 +941,8 @@ function hideMenu(e) {
   e.target.classList.add("hidden");
 }
 
-function setDefault(e) { // NEEDS ATTENTION!!! .default is disappearing after editormode is clicked
+// Sets default among a list of options in the parent node
+function setDefault(e) {
   let d = e.target.parentNode.querySelector(".default");
   d.classList.remove("default");
   e.target.classList.add("default");
