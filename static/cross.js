@@ -820,21 +820,30 @@ function toggleEditor() {
 
 function checkAnswers() {
     let score = 0;
+    let blanks = 0;
+
     console.log("Rows:", xw.rows, "Cols:", xw.cols);
     for (let i = 0; i < xw.rows; i++) {
         for (let j = 0; j < xw.cols; j++) {
             if (xw.fill[i].charAt(j) == xw.secret_fill[i].charAt(j)) {
                 score += 1;
+                if (xw.fill[i].charAt(j) == BLANK) {
+                    blanks+=1;
+                }
             }
         }
-        if (score == DEFAULT_SIZE) {
+        if (score == (i+1)*DEFAULT_SIZE) {
             console.log("Row",i,"correct");
         } else console.log("Row",i,"incorrect");
     }
-    if (score == i*DEFAULT_SIZE) {
-        console.log("Congratulations!");
+
+    let updated_score = score-blanks;
+    let max_score = DEFAULT_SIZE^2-blanks;
+
+    if (updated_score == max_score) {
+        console.log("Congratulations! You completed the puzzle!");
     } else {
-        console.log("Try again :(");
+        console.log("Not quite yet! Current score:", updated_score/max_score);
     }
 }
 
