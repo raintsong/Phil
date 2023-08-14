@@ -2,6 +2,7 @@
 <head>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
   <title>Phil - a free crossword maker</title>
 </head>
 <body>
@@ -64,6 +65,13 @@
     <button id="auto-fill" type="button" data-tooltip="Auto-fill puzzle" onclick="autoFill()">
       <i class="fa fa-magic fa-fw" aria-hidden="true"></i>
     </button>
+
+    <div class="divider"></div>
+
+    <button id="toggle-editor" type="button" data-tooltip="Turn off editor mode" data-state="on" class="button-on" onclick="toggleEditor()">
+      <i class="fa fa-etsy fa-fw" aria-hidden="true"></i>
+    </button>
+
   </div>
 
   <div id="main"></div>
@@ -118,7 +126,7 @@
   <div id="credits">
     <!--<a href="mailto:me@keiranking.com?Subject=Phil" target="_top">Contact</a> &middot;-->
     <a href="http://www.keiranking.com/Phil" target="_blank">Original: keiranking.com/Phil</a> &middot;
-    <a href="https://github.com/keiranking/Phil" target="_blank">Original Github</a></div>
+    <a href="https://github.com/keiranking/Phil" target="_blank">Original Github</a> &middot;
     <a href="https://github.com/raintsong/Phil" target="_blank">New Github</a></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script>

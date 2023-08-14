@@ -40,6 +40,7 @@ const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
 let history = [];
 let isSymmetrical = true;
+let isEditable = true;
 let grid = undefined;
 let squares = undefined;
 let isMutated = false;
@@ -145,12 +146,19 @@ class Button {
   setState(state) {
     this.state = state;
     this.dom.className = (this.state == "normal") ? "" : this.state;
+    if (state=="disabled") {
+        this.dom.disabled = true;
+        this.dom.classList.add("disabled");
+    } else {
+        this.dom.disabled = false;
+        this.dom.classList.remove("disabled");
+    }
   }
 
   addEvent(e, func) {
     this.dom.addEventListener(e, func);
     if (this.state == "disabled") {
-      this.setState("normal");
+      this.setState("normal"); // Is this necessary???????
     }
   }
 
@@ -234,38 +242,54 @@ class Notification {
 }
 
 class Interface {
-  constructor(rows, cols) {
-    this.grid = new Grid(rows, cols);
-    this.sidebar;
-    this.toolbar = new Toolbar("toolbar");
+    constructor(rows, cols) {
+        this.grid = new Grid(rows, cols);
+        this.sidebar;
+        this.toolbar = new Toolbar("toolbar");
 
-    this.isSymmetrical = true;
-    this.row = 0;
-    this.col = 0;
-    this.acrossWord = '';
-    this.downWord = '';
-    this.acrossStartIndex = 0;
-    this.acrossEndIndex = cols;
-    this.downStartIndex = 0;
-    this.downEndIndex = rows;
-    this.direction = ACROSS;
+        this.isSymmetrical = true;
+        this.row = 0;
+        this.col = 0;
+        this.acrossWord = '';
+        this.downWord = '';
+        this.acrossStartIndex = 0;
+        this.acrossEndIndex = cols;
+        this.downStartIndex = 0;
+        this.downEndIndex = rows;
+        this.direction = ACROSS;
 
-    console.log("Grid UI created.")
-  }
+        console.log("Grid UI created.")
+    }
 
-  toggleDirection() {
-    this.direction = (this.direction == ACROSS) ? DOWN : ACROSS;
-  }
+    reset() {
+        this.grid = new Grid(rows, cols);     this.sidebar;
+        this.toolbar = new Toolbar("toolbar");
 
-  update() {
-    updateInfoUI();
-    updateLabelsAndClues();
-    updateActiveWords();
-    updateGridHighlights();
-    updateSidebarHighlights();
-    updateCluesUI();
-    updateCluesListUI();
-  }
+        this.isSymmetrical = true;
+        this.row = 0;
+        this.col = 0;
+        this.acrossWord = '';
+        this.downWord = '';
+        this.acrossStartIndex = 0;
+        this.acrossEndIndex = cols;
+        this.downStartIndex = 0;
+        this.downEndIndex = rows;
+        this.direction = ACROSS;
+    }
+
+    toggleDirection() {
+        this.direction = (this.direction == ACROSS) ? DOWN : ACROSS;
+    }
+
+    update() {
+        updateInfoUI();
+        updateLabelsAndClues();
+        updateActiveWords();
+        updateGridHighlights();
+        updateSidebarHighlights();
+        updateCluesUI();
+        updateCluesListUI();
+    }
 }
 
 new Notification(document.getElementById("shortcuts").innerHTML, 300);
@@ -280,48 +304,49 @@ current.update();
 // F U N C T I O N S
 
 function createNewPuzzle(rows, cols) {
-  xw["clues"] = {};
-  xw["title"] = DEFAULT_TITLE;
-  xw["author"] = DEFAULT_AUTHOR;
-  xw["rows"] = rows || DEFAULT_SIZE;
-  xw["cols"] = cols || xw.rows;
-  xw["fill"] = [];
-  for (let i = 0; i < xw.rows; i++) {
+    xw["clues"] = {};
+    xw["title"] = DEFAULT_TITLE;
+    xw["author"] = DEFAULT_AUTHOR;
+    xw["rows"] = rows || DEFAULT_SIZE;
+    xw["cols"] = cols || xw.rows;
+    xw["fill"] = [];
+    for (let i = 0; i < xw.rows; i++) {
     xw.fill.push("");
     for (let j = 0; j < xw.cols; j++) {
       xw.fill[i] += BLANK;
     }
-  }
-  updateInfoUI();
-  document.getElementById("main").innerHTML = "";
-  createGrid(xw.rows, xw.cols);
+    }
+    updateInfoUI();
+    document.getElementById("main").innerHTML = "";
+    createGrid(xw.rows, xw.cols);
 
-  isSymmetrical = true;
-  current = {
-    "row":        0,
-    "col":        0,
-    "acrossWord": '',
-    "downWord":   '',
-    "acrossStartIndex":0,
-    "acrossEndIndex":  DEFAULT_SIZE,
-    "downStartIndex":  0,
-    "downEndIndex":    DEFAULT_SIZE,
-    "direction":  ACROSS
-  };
+    isSymmetrical = true;
+    //   current = {
+    //     "row":        0,
+    //     "col":        0,
+    //     "acrossWord": '',
+    //     "downWord":   '',
+    //     "acrossStartIndex":0,
+    //     "acrossEndIndex":  DEFAULT_SIZE,
+    //     "downStartIndex":  0,
+    //     "downEndIndex":    DEFAULT_SIZE,
+    //     "direction":  ACROSS
+    //   };
 
-  grid = document.getElementById("grid");
-  squares = grid.querySelectorAll('td');
+    grid = document.getElementById("grid");
+    squares = grid.querySelectorAll('td');
 
-  updateActiveWords();
-  updateGridHighlights();
-  updateSidebarHighlights();
-  updateCluesUI();
+    updateActiveWords();
+    updateGridHighlights();
+    updateSidebarHighlights();
+    updateCluesUI();
+    updateCluesListUI();
 
-  for (const square of squares) {
+    for (const square of squares) {
     square.addEventListener('click', mouseHandler);
-  }
-  grid.addEventListener('keydown', keyboardHandler);
-  console.log("New puzzle created.")
+    }
+    grid.addEventListener('keydown', keyboardHandler);
+    console.log("New puzzle created.")
 }
 
 function mouseHandler(e) {
@@ -756,6 +781,23 @@ function toggleSymmetry() {
   symButton.setAttribute("data-tooltip", "Turn " + buttonState + " symmetry");
 }
 
+function toggleEditor() {
+    isEditable = !isEditable;
+    let editorButton = document.getElementById("toggle-editor");
+    editorButton.classList.toggle("button-on");
+    buttonState = editorButton.getAttribute("data-state");
+    editorButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
+    editorButton.setAttribute("data-tooltip", "Turn " + buttonState + " editor mode");
+    console.log("Current toolbar: " + current.toolbar);
+    console.log("Current toolbar buttons: " + current.toolbar.buttons);
+    for (let [key, button] of Object.entries(current.toolbar.buttons)) {
+        if(isEditable) {
+            button.setState("normal");
+        } else {
+            button.setState("disabled");
+        }
+    }
+}
 // function toggleHelp() {
 //   document.getElementById("help").style.display = "none";
 // }
@@ -887,7 +929,7 @@ function hideMenu(e) {
   e.target.classList.add("hidden");
 }
 
-function setDefault(e) {
+function setDefault(e) { // NEEDS ATTENTION!!! .default is disappearing after editormode is clicked
   let d = e.target.parentNode.querySelector(".default");
   d.classList.remove("default");
   e.target.classList.add("default");
