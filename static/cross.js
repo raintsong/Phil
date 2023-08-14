@@ -62,11 +62,14 @@ class Crossword {
     this.rows = rows;
     this.cols = cols;
     this.fill = [];
+    this.secret_fill = [];
     //
     for (let i = 0; i < this.rows; i++) {
       this.fill.push("");
+
       for (let j = 0; j < this.cols; j++) {
         this.fill[i] += BLANK;
+
       }
     }
   }
@@ -212,7 +215,8 @@ class Toolbar {
       "clearFill": new Button("clear-fill"),
       "toggleSymmetry": new Button("toggle-symmetry"),
       "openWordlist": new Button("open-wordlist"),
-      "autoFill": new Button("auto-fill")
+      "autoFill": new Button("auto-fill"),
+      "toggleEditor": new Button("toggle-editor")
     }
   }
 }
@@ -799,7 +803,7 @@ function toggleEditor() {
     // console.log("Current toolbar buttons: " + current.toolbar.buttons);
     for (let [key, button] of Object.entries(current.toolbar.buttons)) {
         // console.log("Current button: " + button.id)
-        if(button.id == "open-JSON") {
+        if(button.id == "open-JSON" || button.id == "toggle-editor") {
             continue;
         };
         if(isEditable) {
@@ -813,6 +817,26 @@ function toggleEditor() {
 // function toggleHelp() {
 //   document.getElementById("help").style.display = "none";
 // }
+
+function checkAnswers() {
+    let score = 0;
+    console.log("Rows:", xw.rows, "Cols:", xw.cols);
+    for (let i = 0; i < xw.rows; i++) {
+        for (let j = 0; j < xw.cols; j++) {
+            if (xw.fill[i].charAt(j) == xw.secret_fill[i].charAt(j)) {
+                score += 1;
+            }
+        }
+        if (score == DEFAULT_SIZE) {
+            console.log("Row",i,"correct");
+        } else console.log("Row",i,"incorrect");
+    }
+    if (score == i*DEFAULT_SIZE) {
+        console.log("Congratulations!");
+    } else {
+        console.log("Try again :(");
+    }
+}
 
 function clearFill() {
   for (let i = 0; i < xw.rows; i++) {

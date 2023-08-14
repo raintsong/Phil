@@ -243,6 +243,51 @@ function openPuzzle() {
   document.getElementById("open-puzzle-input").click();
 }
 
+// function openArt() {
+//     let reader = new FileReader();
+//     file =
+//     try {
+//         switch (file.name.slice(file.name.lastIndexOf("."))) {
+//             case ".json":
+//             case ".xw":
+//             case ".txt":
+//                 reader.onload = function(e) {
+//                   convertJSONToPuzzle(JSON.parse(e.target.result));
+//                 };
+//                 reader.readAsText(file); // removing this line breaks the JSON import
+//                 break;
+//             case ".puz":
+//                 reader.onload = function(e) {
+//                   const bytes = new Uint8Array(e.target.result);
+//                   let puz;
+//                   if (isPuz(bytes)) {
+//                     puz = new PuzReader(bytes).toJson();
+//                   } else {
+//                     puz = JSON.parse(new TextDecoder().decode(bytes)); // TextDecoder doesn't work in Edge 16
+//                   }
+//                   convertJSONToPuzzle(puz);
+//                 };
+//                 reader.readAsArrayBuffer(file);
+//                 break;
+//             default:
+//                 break;
+//     }
+//     console.log("Loaded", file.name, "(Editable:", isEditable,")");
+//     }
+//     catch (err) {
+//     switch (err.name) {
+//       case "SyntaxError":
+//         new Notification("Invalid file. PUZ and JSON puzzle files only.", 10);
+//         break;
+//       case "ScrambledError":
+//         new Notification("Cannot open scrambled PUZ file.", 10);
+//         break;
+//       default:
+//         console.log("Error:", err);
+//     }
+//     }
+// }
+
 function isPuz(bytes) {
   const magic = 'ACROSS&DOWN';
   for (var i = 0; i < magic.length; i++) {
@@ -283,7 +328,7 @@ function openFile(e) {
       default:
         break;
     }
-    console.log("Loaded", file.name);
+    console.log("Loaded", file.name, "(Editable:", isEditable,")");
   }
   catch (err) {
     switch (err.name) {
@@ -315,14 +360,31 @@ function convertJSONToPuzzle(puz) {
   xw.author = puz.author || DEFAULT_AUTHOR;
   // Update fill
   new_fill = [];
+  secret_fill = [];
   for (let i = 0; i < xw.rows; i++) {
     new_fill.push("");
+    secret_fill.push("");
     for (let j = 0; j < xw.cols; j++) {
-      const k = (i * xw.rows) + j;
-      new_fill[i] += (puz.grid[k].length > 1) ? puz.grid[k][0].toUpperCase() : puz.grid[k].toUpperCase(); // Strip rebus answers to their first letter
+        const k = (i * xw.rows) + j;
+        if (puz.grid[k] == ".") {
+            new_fill[i] += puz.grid[k].toUpperCase();
+            secret_fill[i] += puz.grid[k].toUpperCase();
+
+        } else {
+            secret_fill[i] += (puz.grid[k].length > 1) ? puz.grid[k][0].toUpperCase() : puz.grid[k].toUpperCase();
+
+            if (isEditable) { // only add actual letters if editable
+                new_fill[i] += (puz.grid[k].length > 1) ? puz.grid[k][0].toUpperCase() : puz.grid[k].toUpperCase(); // Strip rebus answers to their first letter
+            } else {
+                new_fill[i] += BLANK;
+            }
+        }
+        // console.log(i,j,puz.grid[k]);
     }
+    console.log("Secret:",secret_fill[i],"Open:",new_fill[i]);
   }
   xw.fill = new_fill;
+  xw.secret_fill = secret_fill;
   isMutated = true;
 
   updateGridUI();

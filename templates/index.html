@@ -21,6 +21,9 @@
       <i class="fa fa-folder-open-o fa-fw" aria-hidden="true"></i>
     </button>
     <input id="open-puzzle-input" class="hidden" type="file" accept=".json,.txt,.xw,.puz"/>
+    <button id="open-art" type="button" data-tooltip="Open art..." onmouseenter="showMenu(event)" onclick="openArt()" class="disabled">
+      <i class="fa fa-picture-o fa-fw" aria-hidden="true"></i>
+    </button>
     <div id="export-menu" class="menu hidden" onmouseleave="hideMenu(event)">
       <h4>Export as:</h4>
       <button id="export-JSON" class="default" type="button" data-tooltip="Phil puzzle (.xw)" onmouseup="setDefault(event)" onclick="writeFile('xw')">
@@ -68,6 +71,12 @@
 
     <div class="divider"></div>
 
+    <button id="check-answers" type="button" data-tooltip="Check Answers" data-state="off"  onclick="checkAnswers()">
+      <i class="fa fa-check fa-fw" aria-hidden="true"></i>
+    </button>
+
+    <div class="divider"></div>
+
     <button id="toggle-editor" type="button" data-tooltip="Turn off editor mode" data-state="on" class="button-on" onclick="toggleEditor()">
       <i class="fa fa-etsy fa-fw" aria-hidden="true"></i>
     </button>
@@ -101,12 +110,18 @@
 
   <div id="sidebar-2" class="sidebar"> <!-- Working here  -->
     <div class="half-sidebar">
-      <div id="across-heading-2" class="direction-heading">ACROSS
+      <div id="across-heading-2" class="direction-heading">
+          <div class="clue">
+              ACROSS
+          </div>
       </div>
       <ul id="across-clues-list" class="clues-list"></ul>
     </div>
     <div class="half-sidebar">
-      <div id="down-heading-2" class="direction-heading">DOWN
+      <div id="down-heading-2" class="direction-heading">
+          <div class="clue">
+              DOWN
+          </div>
       </div>
       <ul id="down-clues-list" class="clues-list"></ul>
     </div>

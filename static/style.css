@@ -279,10 +279,14 @@ kbd {
   /*width: 160px;*/
   list-style-type: none;
   padding: 0;
-  color: var(--med-grey);
+  /*color: var(--med-grey);*/
   font-weight: 400;
   overflow: hidden;
   overflow-y: scroll;
+}
+
+#sidebar ul.matches, .sidebar ul.matches {
+  color: var(--med-grey);
 }
 
 #sidebar ul.matches li, .sidebar ul.matches li, .sidebar ul.clues-list li {
