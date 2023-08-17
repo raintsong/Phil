@@ -12,6 +12,7 @@
   --dk-blue-mono: #656565;
   --green: #00ff00;
   --red: #ff3333;
+  --gold: #ffd700;
 }
 
 body {
@@ -185,6 +186,15 @@ kbd {
   background-color: var(--dk-grey);
   color: var(--lt-grey);
   float: left;
+}
+
+.congratulations {
+  background-color: var(--gold);
+  color: var(--dk-grey);
+}
+
+.warning {
+    background-color: var(--red);
 }
 
 .notification h3 {

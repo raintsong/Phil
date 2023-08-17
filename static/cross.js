@@ -62,7 +62,7 @@ class Crossword {
     this.rows = rows;
     this.cols = cols;
     this.fill = [];
-    this.secret_fill = [];
+    this.secret_fill = this.fill;
     //
     for (let i = 0; i < this.rows; i++) {
       this.fill.push("");
@@ -145,6 +145,7 @@ class Button {
     this.tooltip = this.dom.getAttribute("data-tooltip");
     // this.type = type; // "normal", "toggle", "menu", "submenu"
     this.state = this.dom.className; // "normal", "on", "open", "disabled"
+    this.default_state = this.dom.className;
   }
 
     setState(state) {
@@ -218,23 +219,24 @@ class Toolbar {
       "autoFill": new Button("auto-fill"),
       "toggleEditor": new Button("toggle-editor")
     }
+    this.buttons.freezeLayout.default_state = "disabled";
   }
 }
 
 class Notification {
-  constructor(message, lifetime = undefined) {
+  constructor(message, lifetime = undefined, type = "tip") {
     this.message = message;
     this.id = String(randomNumber(1,10000));
-    this.post();
+    this.post(type);
     if (lifetime) {
       this.dismiss(lifetime);
     }
   }
 
-  post() {
+  post(type) {
     let div = document.createElement("DIV");
     div.setAttribute("id", this.id);
-    div.setAttribute("class", "notification");
+    div.setAttribute("class", "notification " + type);
     div.innerHTML = this.message;
     div.addEventListener('click', this.dismiss);
     document.getElementById("footer").appendChild(div);
@@ -247,7 +249,9 @@ class Notification {
   dismiss(seconds = 0) {
     let div = document.getElementById(this.id);
     // seconds = (seconds === true) ? 10 : seconds;
-    setTimeout(function() { div.remove(); }, seconds * 1000);
+    setTimeout(function() {
+        div.remove();
+    }, seconds * 1000);
   }
 }
 
@@ -303,7 +307,7 @@ class Interface {
     }
 }
 
-new Notification(document.getElementById("shortcuts").innerHTML, 300);
+new Notification(document.getElementById("shortcuts").innerHTML, 60);
 // new Notification("Tip: <kbd>.</kbd> makes a black square.", 300);
 // new Notification("Tip: <kbd>Enter</kbd> toggles direction.", 300);
 
@@ -807,11 +811,12 @@ function toggleEditor() {
             continue;
         };
         if(isEditable) {
-            button.setState("normal");
+            button.setState(button.default_state);
         } else {
             button.setState("disabled");
             updateMatchesUI(); // clear the matches listed
         }
+        console.log("Default state of",button.id, ":", button.default_state);
     }
 }
 // function toggleHelp() {
@@ -821,29 +826,59 @@ function toggleEditor() {
 function checkAnswers() {
     let score = 0;
     let blanks = 0;
+    let whites = 0;
 
-    console.log("Rows:", xw.rows, "Cols:", xw.cols);
+    // console.log("Rows:", xw.rows, "Cols:", xw.cols);
+    // console.log("Fill:", xw.fill);
+    // console.log("Char at 0:", xw.fill[0]);
+    // console.log("Char at 0,0:", xw.fill[0][0]);
+    // console.log("Secret fill:", xw.secret_fill);
     for (let i = 0; i < xw.rows; i++) {
-        for (let j = 0; j < xw.cols; j++) {
-            if (xw.fill[i].charAt(j) == xw.secret_fill[i].charAt(j)) {
-                score += 1;
-                if (xw.fill[i].charAt(j) == BLANK) {
-                    blanks+=1;
+        if (xw.fill[i]) {
+            for (let j = 0; j < xw.cols; j++) {
+                if (xw.fill[i][j] == xw.secret_fill[i][j]) {
+                    score += 1;
+                    if (xw.fill[i][j] == ".") {
+                        blanks+=1;
+                    } else if (xw.fill[i][j] == " ") {
+                        whites+=1;
+                    }
                 }
             }
+        } else {
+            blanks += DEFAULT_SIZE;
         }
-        if (score == (i+1)*DEFAULT_SIZE) {
-            console.log("Row",i,"correct");
-        } else console.log("Row",i,"incorrect");
+
+        // if (score == (i+1)*DEFAULT_SIZE) {
+        //     // console.log("Row",i,"correct");
+        // } else {
+        //     console.log("Row",i,"incorrect")
+        // };
     }
+    // console.log("blanks:", blanks);
+    // console.log("whites:", whites);
 
     let updated_score = score-blanks;
-    let max_score = DEFAULT_SIZE^2-blanks;
+    let max_score = DEFAULT_SIZE*DEFAULT_SIZE - blanks;
+    let percent_score = Number(updated_score/max_score).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:0});
 
-    if (updated_score == max_score) {
-        console.log("Congratulations! You completed the puzzle!");
+    if (max_score == 0) {
+        console.log("Totally empty :(")
+        return;
+    }
+    if (whites == max_score) {
+        console.log("Empty puzzle...");
+        new Notification("Empty puzzle...", 3, "warning");
+
+    } else if (updated_score == max_score) {
+        console.log("Puzzle complete!");
+        new Notification("Congratulations! You completed the puzzle!", 60, "congratulations");
     } else {
-        console.log("Not quite yet! Current score:", updated_score/max_score);
+        // console.log("updated score:", updated_score);
+        // console.log("max_score:", max_score);
+        console.log("Not quite yet! Current score:", percent_score);
+        new Notification("Not quite yet! Current score:" + percent_score, 3, "warning");
+
     }
 }
 
