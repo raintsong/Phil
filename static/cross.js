@@ -388,22 +388,28 @@ function keyboardHandler(e) {
 
   if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
     let oldContent = xw.fill[current.row][current.col];
-    xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
-    if (oldContent == BLACK) {
-      if (isSymmetrical) {
-        xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
-      }
-    }
-    // move the cursor
-    e = new Event('keydown');
-    if (current.direction == ACROSS) {
-      e.which = keyboard.right;
+    if (oldContent == BLACK & !isEditable) {
+        // do nothing
     } else {
-      e.which = keyboard.down;
+        xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
+        if (oldContent == BLACK) {
+          if (isSymmetrical) {
+            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+          }
+        }
+        // move the cursor
+        e = new Event('keydown');
+        if (current.direction == ACROSS) {
+          e.which = keyboard.right;
+        } else {
+          e.which = keyboard.down;
+        }
+        isMutated = true;
     }
-    isMutated = true;
+
+    // use the key pressed (e.which) and insert it into the correct row and column of the fill array
   }
-  if (e.which == keyboard.black) {
+  if (e.which == keyboard.black && isEditable) {
       if (xw.fill[current.row][current.col] == BLACK) { // if already black...
         e = new Event('keydown');
         e.which = keyboard.delete; // make it a white square
@@ -421,20 +427,21 @@ function keyboardHandler(e) {
   if (e.which == keyboard.delete) {
     e.preventDefault();
     let oldContent = xw.fill[current.row][current.col];
-    xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
-      if (oldContent == BLACK) {
+    if (oldContent == BLACK && !isEditable) {
+        // do nothing
+    } else {
+        xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
         if (isSymmetrical) {
           xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
         }
-      } else { // move the cursor
         e = new Event('keydown');
         if (current.direction == ACROSS) {
           e.which = keyboard.left;
         } else {
           e.which = keyboard.up;
         }
-      }
-      isMutated = true;
+        isMutated = true;
+    }
   }
   if (e.which >= keyboard.left && e.which <= keyboard.down) {
       e.preventDefault();
