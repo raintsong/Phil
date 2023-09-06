@@ -311,9 +311,12 @@ new Notification(document.getElementById("shortcuts").innerHTML, 60);
 // new Notification("Tip: <kbd>.</kbd> makes a black square.", 300);
 // new Notification("Tip: <kbd>Enter</kbd> toggles direction.", 300);
 
+let newPuzzle = true;
 let xw = new Crossword(); // model
 let current = new Interface(xw.rows, xw.cols); // view-controller
 current.update();
+toggleEditor(); // turns off editor mode. Placeholder for better code
+newPuzzle = false;
 
 //____________________
 // F U N C T I O N S
@@ -821,7 +824,9 @@ function toggleEditor() {
             button.setState(button.default_state);
         } else {
             button.setState("disabled");
-            updateMatchesUI(); // clear the matches listed
+            if (newPuzzle == false) {
+                updateMatchesUI(); // clear the matches listed
+            }
         }
         console.log("Default state of",button.id, ":", button.default_state);
     }
