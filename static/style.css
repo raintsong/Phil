@@ -193,6 +193,11 @@ kbd {
   color: var(--dk-grey);
 }
 
+.note {
+  background-color: var(--lt-grey);
+  color: var(--dk-grey);
+}
+
 .warning {
     background-color: var(--red);
 }

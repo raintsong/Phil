@@ -527,22 +527,29 @@ function updateCluesUI() {
     let downClueText = document.getElementById("down-clue-text");
     // const currentCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
 
-    // If the current cell is black, empty interface and get out
-    if (xw.fill[current.row][current.col] == BLACK) {
-        acrossClueNumber.innerHTML = "";
-        downClueNumber.innerHTML = "";
-        acrossClueText.innerHTML = "";
-        downClueText.innerHTML = "";
-        return;
+    if (isEditable) {
+        acrossClueText.setAttribute("contenteditable", "true")
+
+        // If the current cell is black, empty interface and get out
+        if (xw.fill[current.row][current.col] == BLACK) {
+            acrossClueNumber.innerHTML = "";
+            downClueNumber.innerHTML = "";
+            acrossClueText.innerHTML = "";
+            downClueText.innerHTML = "";
+            return;
+        }
+        // Otherwise, assign values
+        const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
+        const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
+        acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
+        downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
+        acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
+        downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
+    } else {
+        acrossClueText.setAttribute("contenteditable", "false")
     }
-    // Otherwise, assign values
-    const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
-    const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
-    acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
-    downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
-    acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
-    downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
-    }
+}
+
 
 function updateCluesListUI() {
     let allClues = xw.clues;
@@ -555,34 +562,39 @@ function updateCluesListUI() {
         acrossCluesList.innerHTML = "";
         downCluesList.innerHTML = "";
     }
-
+    // console.log("Clues: " xw.clues);
     for (const key in xw.clues) {
         const location = key.split(",");
         const label = grid.querySelector('[data-row="' + location[0] + '"]').querySelector('[data-col="' + location[1] + '"]').firstChild.innerHTML;
         if (label) {
             if (location[2] == ACROSS) {
-                acrossClues.push(label + ". " + xw.clues[location]);
+                acrossClues[label] = (label + ". " + xw.clues[location]);
+                // acrossClues.push(label + ". " + xw.clues[location]);
                 // console.log(label + ". " + xw.clues[location]);
             } else {
-                downClues.push(label + ". " + xw.clues[location]);
+                downClues[label] = (label + ". " + xw.clues[location]);
             }
         }
     }
 
     for (const clue of acrossClues) {
-        // console.log("(Across) " + clue);
-        newClue = document.createElement("li");
-        newClue.className = "across-clue";
-        newClue.innerHTML = clue;
-        acrossCluesList.append(newClue);
+        if (clue) {
+            // console.log("(Across) " + clue);
+            newClue = document.createElement("li");
+            newClue.className = "across-clue";
+            newClue.innerHTML = clue;
+            acrossCluesList.append(newClue);
+        }
     }
 
     for (const clue of downClues) {
-        // console.log("(Down) " + clue);
-        newClue = document.createElement("li");
-        newClue.className = "down-clue";
-        newClue.innerHTML = clue;
-        downCluesList.append(newClue);
+        if (clue) {
+            // console.log("(Down) " + clue);
+            newClue = document.createElement("li");
+            newClue.className = "down-clue";
+            newClue.innerHTML = clue;
+            downCluesList.append(newClue);
+        }
     }
     // console.log("Clues updated.")
 }
@@ -830,6 +842,7 @@ function toggleEditor() {
         }
         console.log("Default state of",button.id, ":", button.default_state);
     }
+    updateCluesUI(); // ensures that clue becomes uneditable
 }
 // function toggleHelp() {
 //   document.getElementById("help").style.display = "none";
@@ -884,7 +897,8 @@ function checkAnswers() {
 
     } else if (updated_score == max_score) {
         console.log("Puzzle complete!");
-        new Notification("Congratulations! You completed the puzzle!", 60, "congratulations");
+        new Notification("Congratulations! You completed the puzzle. Editor's note below:", 60, "congratulations");
+        new Notification("Hello solvers, it was truly an honor working on this puzzle. I enjoyed the creation process immensely, and I hope you smiled at at least a few clues and answers. Also, happy birthday for those of you who have recently turned a new age. Your author misses you both and hopes to see you both soon. Sincerely, Rain", 60, "note");
     } else {
         // console.log("updated score:", updated_score);
         // console.log("max_score:", max_score);
