@@ -316,6 +316,7 @@ let xw = new Crossword(); // model
 let current = new Interface(xw.rows, xw.cols); // view-controller
 current.update();
 toggleEditor(); // turns off editor mode. Placeholder for better code
+toggleSymmetry(); // turns off backspacing of symmetric spots
 newPuzzle = false;
 
 //____________________
@@ -329,10 +330,10 @@ function createNewPuzzle(rows, cols) {
     xw["cols"] = cols || xw.rows;
     xw["fill"] = [];
     for (let i = 0; i < xw.rows; i++) {
-    xw.fill.push("");
-    for (let j = 0; j < xw.cols; j++) {
-      xw.fill[i] += BLANK;
-    }
+        xw.fill.push("");
+        for (let j = 0; j < xw.cols; j++) {
+          xw.fill[i] += BLANK;
+        }
     }
     updateInfoUI();
     document.getElementById("main").innerHTML = "";
@@ -359,7 +360,6 @@ function createNewPuzzle(rows, cols) {
     updateSidebarHighlights();
     updateCluesUI();
     updateCluesListUI();
-
     for (const square of squares) {
     square.addEventListener('click', mouseHandler);
     }
@@ -391,7 +391,7 @@ function keyboardHandler(e) {
 
   if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
     let oldContent = xw.fill[current.row][current.col];
-    if (oldContent == BLACK & !isEditable) {
+    if (oldContent == BLACK && !isEditable) {
         // do nothing
     } else {
         xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
@@ -434,7 +434,7 @@ function keyboardHandler(e) {
         // do nothing
     } else {
         xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
-        if (isSymmetrical) {
+        if (isSymmetrical && isEditable) {
           xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
         }
         e = new Event('keydown');
